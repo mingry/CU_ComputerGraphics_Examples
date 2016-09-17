@@ -3,7 +3,7 @@ GL/*
 glm/*
 ipch/*
 lib/*.lib
-*/Relase/*
+*/Release/*
 */Debug/*
 
 *.*~
