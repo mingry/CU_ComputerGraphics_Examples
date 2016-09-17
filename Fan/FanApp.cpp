@@ -1,18 +1,21 @@
-
-
-
+#include <iostream>
 #include "GL/glew.h"
 #include "GL/freeglut.h"
 #include "glm/glm.hpp"
-#include "glm/gtc/type_ptr.hpp"
+#include "glm/ext.hpp"
+#include "glm/gtx/transform.hpp"
 #include "InitShader.h"
 #include "Camera.h"
 #include "GroundObj.h"
-#include "Objects.h"
-#include "OpenGLApp.h"
+#include "FanApp.h"
+#include "FanObjects.h"
+
+
+
 
 // Camera 
 static Camera g_camera;
+
 
 // Window and User Interface
 static bool g_left_button_pushed;
@@ -23,8 +26,21 @@ static int g_window_w;
 static int g_window_h;
 
 
+
 // Shader Program ID
 int g_shader_id;
+
+
+// Animtion Timer
+// 애니메이션 시간에 관련된 변수들.
+static const float FPS = 60.f;
+void Timer(int value);
+static float g_elapsed_time = 0.0f;  // 프로그램 시작 시점부터 흘러간 시간 (초 단위).
+static float g_motor_angle = 0.0f;	// 선풍기 모터의 현재 회전각을 저장.
+
+
+// Draw Mode
+int g_draw_mode = 1;
 
 
 
@@ -42,7 +58,6 @@ void InitOpenGL()
 	g_shader_id = CreateFromFiles("Shader/vshader.glsl", "Shader/fshader.glsl");
 	glUseProgram(g_shader_id);
 	
-
 	// 배경색을 정한다.
 	glClearColor(1, 1, 1, 0);
 	glClearDepth(1.0f);
@@ -58,20 +73,15 @@ void InitOpenGL()
 	g_camera.setRotation(glm::quat(cos(glm::pi<float>()/2), 0, sin(glm::pi<float>()/2), 0));
 	g_camera.setTranslation(glm::vec3(0, 110, 590));
 
-
-
 	// Initialize Mesh Models (VAO, VBO)
 	// 필요한 VAO, VBO를 생성한다.
 	InitGround();
-	InitTwoTri();
-	InitCube();
+	InitFanObjects();
 
+
+	// 1/60초 후에 Timer 함수가 호출되도록 설정 한다.
+	glutTimerFunc((unsigned int)(1000/FPS), Timer, 0);
 }
-
-
-
-
-
 
 
 /**
@@ -82,17 +92,39 @@ ClearOpenGLResource: 프로그램이 끝나기 메모리 해제를 위해 한 번 호출되는 함수. (
 void ClearOpenGLResource()
 {
 	// Delete Mesh Models (VA0, VBO)
-	DeleteTwoTri();
-	DeleteCube();
 	DeleteGround();
+	DeleteFanObjects();
 }
 
 
 
 
+/**
+Timer: 애니메이션을 위해 주기적으로 호출되는 함수.
+이 프로그램에서는 1초에 60번 호출되도록 설계한다.
+흘러간 시간을 업데이트하고 이를 바탕으로 선풍기 모터의 각도를 새로 계산한다.
+*/
+void Timer(int value)
+{
+	g_elapsed_time += 1.0f/FPS;
+
+	g_motor_angle = 2.f * glm::pi<float>() * g_elapsed_time;
+
+
+	// glutPostRedisplay는 가능한 빠른 시간 안에 전체 그림을 다시 그릴 것을 시스템에 요청한다.
+	// 결과적으로 Display() 함수를 호출하게 된다.
+	glutPostRedisplay();
+
+	// 1/60 초 후에 Timer 함수가 다시 호출되로록 한다.
+	glutTimerFunc((unsigned int)(1000/FPS), Timer, 0);
+}
 
 
 
+void Display1();
+void Display2();
+void Display3();
+void Display4();
 
 
 /**
@@ -102,13 +134,16 @@ Display: 그림을 그리기 위해 호출되는 callback 함수.
 반복적으로 호출된다는 것을 명심하고, 불필요한 내용은 절대 이곳에 넣어서는 안된다.
 예를 들어, VAO나 VBO를 생성하는 코드를 이곳에 넣어서는 안된다. 이 곳에는 이미 생성된
 VAO와 VBO를 사용해서 그림을 그리는 코드만 포함되어야 한다.
+
+이 예제의 경우에는 g_draw_mode가 변함에 따라 다른 그림이 나타나도록 하였다.
 */
 void Display()
 {
 	// 전체 화면을 지운다.
 	// glClear는 Display 함수 가장 윗 부분에서 한 번만 호출되어야한다.
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
 
 	// 카메라 프로젝션 속성을 설정한다.
 	int p_mat_loc = glGetUniformLocation(g_shader_id, "projection_matrix");
@@ -117,12 +152,35 @@ void Display()
 	// 카메라 위치와 앞으로 그려질 모델의 위치를 설정한다.
 	int m_mat_loc = glGetUniformLocation(g_shader_id, "modelview_matrix");
 	glUniformMatrix4fv(m_mat_loc, 1, GL_FALSE,  glm::value_ptr(g_camera.GetGLViewMatrix()));
-	
 
-	// 그림을 그린다.
+
 	DrawGround();
-	DrawTwoTri();
-	//DrawCube();
+
+
+	if ( g_draw_mode == 1 )
+	{
+		// 1: Parted Fan Objects
+		Display1();
+	}
+
+	else if ( g_draw_mode == 2 )
+	{
+		// 2: Assmbled Fan
+		Display2();
+
+	}
+
+	else if ( g_draw_mode == 3 )
+	{
+		// 3: New Fan
+		Display3();
+	}
+	
+	else if ( g_draw_mode == 4 )
+	{
+		// 4: Many Fans
+		Display4();
+	}
 
 
 	// 더블버퍼링 수행을 위한 함수 호출.
@@ -130,6 +188,114 @@ void Display()
 	glutSwapBuffers();
 }
 
+
+
+
+/**
+Displa1y: 분해되어있는 선풍기를 그리는 함수. 
+*/
+void Display1()
+{
+	// Get modelview metrix Location
+	// Shader 프로그램 에서 Model-view 변환 행렬을 저장할 위치를 받아온다. (vshader.glsl 파일 참조)
+	int m_mat_loc = glGetUniformLocation(g_shader_id, "modelview_matrix");
+
+
+	// Get Camera Transfomration
+	// 현재 카메라 변환 행렬을 받아온다.
+	glm::mat4 camera_T = g_camera.GetGLViewMatrix();
+
+
+
+
+	// Base
+	// 선풍기 베이스 부분.
+	{
+		// 1. 변환 행렬 값을 계산한다.
+		glm::mat4 T = camera_T;
+		glm::mat4 trans = glm::translate( glm::vec3(-120.f, 0.f, 0.f)  );
+		
+		// 1.1. 카메라 변환 행결과 베이스 부분 변환 행렬을 곱한다.
+		T = T * trans;
+		
+		// 2. 변환 행렬 값을 Shader 프로그램으로 보낸다.
+		glUniformMatrix4fv(m_mat_loc, 1, GL_FALSE,  glm::value_ptr(T));
+
+		// 3. 그린다.
+		// 위에서 설정된 변환 행렬이 반영된다.(vshader.glsl 파일 참조)
+		DrawBase();
+	}
+
+
+	// Neck
+	{
+		glm::mat4 T = camera_T;
+		glm::mat4 trans = glm::translate( glm::vec3(-60.f, 0.f, 0.f)  );
+		
+		T = T * trans;
+		
+		// Set Transform
+		glUniformMatrix4fv(m_mat_loc, 1, GL_FALSE,  glm::value_ptr(T));
+
+		DrawNeck();
+	}
+	
+	// Head and Motor
+	{
+		glm::mat4 T = camera_T;
+		glm::mat4 trans = glm::translate( glm::vec3(0.f, 0.f, 0.f)  );
+		
+		T = T * trans;
+		
+		glUniformMatrix4fv(m_mat_loc, 1, GL_FALSE,  glm::value_ptr(T));
+		DrawHead();
+		
+
+		glm::mat4 rot = glm::rotate(g_motor_angle, glm::vec3(0.f, 1.f, 0.f)  );
+		T = T * rot;
+		
+		glUniformMatrix4fv(m_mat_loc, 1, GL_FALSE,  glm::value_ptr(T));
+
+		DrawMotor();
+	}
+
+	// Wings
+	{
+		glm::mat4 T = camera_T;
+		glm::mat4 trans = glm::translate( glm::vec3(60.f, 0.f, 0.f)  );
+		
+		T = T * trans;
+
+		glUniformMatrix4fv(m_mat_loc, 1, GL_FALSE,  glm::value_ptr(T));
+		DrawWing(0);
+
+		T = T * trans;
+		glUniformMatrix4fv(m_mat_loc, 1, GL_FALSE,  glm::value_ptr(T));
+		DrawWing(1);
+
+
+		T = T * trans;
+		glUniformMatrix4fv(m_mat_loc, 1, GL_FALSE,  glm::value_ptr(T));
+		DrawWing(2);
+	}
+
+
+
+
+	
+}
+
+void Display2()
+{
+}
+
+void Display3()
+{
+}
+
+void Display4()
+{
+}
 
 
 
@@ -153,18 +319,19 @@ void Reshape( int w, int h )
 	//  w : window width   h : window height
 	glViewport(0,0,(GLsizei)w,(GLsizei)h);
 	g_camera.setAspectRatio((double)w/(double)h);
-
-
-
-	// glutPostRedisplay는 가능한 빠른 시간 안에 전체 그림을 다시 그릴 것을 시스템에 요청한다.
-	// 결과적으로 Display() 함수를 호출하게 된다.
-	glutPostRedisplay();
+	
 } 
 
 
 
 
 
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////
+/// Keyboard and Mouse Input
 
 
 
@@ -189,7 +356,7 @@ void Mouse(int button, int state, int x, int y)
 	double last_mouse_xd = (double)g_last_mouse_x / g_window_w;
 	double last_mouse_yd = 1 - (double)g_last_mouse_y / g_window_h;
 
-	// 아래는 카메라 위치와 방향을 조정하기 위한 코드이다.
+
 	if ( button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
 		g_left_button_pushed = true;
 
@@ -214,9 +381,7 @@ void Mouse(int button, int state, int x, int y)
 
 	g_last_mouse_x = x;
 	g_last_mouse_y = y;
-
 }
-
 
 
 
@@ -233,7 +398,6 @@ void MouseMotion(int x, int y)
 	double last_mouse_xd = (double)g_last_mouse_x / g_window_w;
 	double last_mouse_yd = 1 - (double)g_last_mouse_y / g_window_h;
 
-	// 아래는 카메라 위치와 방향을 조정하기 위한 코드이다.
 	if ( g_left_button_pushed && g_right_button_pushed )
 	{
 		g_camera.inputMouse(Camera::IN_ZOOM, last_mouse_xd, last_mouse_yd, mouse_xd, mouse_yd);
@@ -255,3 +419,79 @@ void MouseMotion(int x, int y)
 }
 
 
+
+/**
+Keyboard: 키보드 입력이 있을 때마다 자동으로 호출되는 함수. 
+파라메터 key 는 눌려진 키보드의 문자값을 나타낸다.
+파라메터 x,y는 현재 마우스 포인터의 좌표값을 나타낸다.
+
+이 예제에서는 키보드 '1', '2', '3', '4' 가 눌려지면 g_draw_mode를 변경한다.
+*/
+void Keyboard(unsigned char key, int x, int y )
+{
+	switch (key)						
+	{
+	case '1':
+		g_draw_mode = 1;
+		break;
+
+	case '2':
+		g_draw_mode = 2;
+		break;
+
+	case '3':
+		g_draw_mode = 3;
+		break;
+
+	case '4':
+		g_draw_mode = 4;
+		break;
+
+	case 27 : exit(0); break;			
+	default : 
+		std::cout << "key: " << key << std::endl;
+		break;
+	}
+
+
+	// glutPostRedisplay는 가능한 빠른 시간 안에 전체 그림을 다시 그릴 것을 시스템에 요청한다.
+	// 결과적으로 Display() 함수를 호출하게 된다.
+	glutPostRedisplay();
+	return;
+}
+
+
+
+
+/**
+SpeicalKeyboard: 문자값으로 표현하기 어려운 키보드 입력이 있을 때마다 자동으로 호출되는 함수. 
+파라메터 key 는 눌려진 키보드를 나타내는 매크로 값 (freeglut_std.h 참고).
+파라메터 x,y는 현재 마우스 포인터의 좌표값.
+*/
+void SpeicalKeyboard(int key, int x, int y )
+{
+	switch (key)						
+	{
+		std::cout << key << std::endl;
+		/* fill here */
+	case GLUT_KEY_DOWN:
+		std::cout << "key down" << std::endl;
+		break;
+
+	case GLUT_KEY_UP:
+		std::cout << "key up" << std::endl;
+		break;
+
+	case GLUT_KEY_LEFT:
+		std::cout << "key left" << std::endl;
+		break;
+
+	case GLUT_KEY_RIGHT:
+		std::cout << "key right" << std::endl;
+		break;
+
+	}
+
+	glutPostRedisplay();
+	return;
+}

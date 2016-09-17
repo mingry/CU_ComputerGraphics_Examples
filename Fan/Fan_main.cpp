@@ -1,7 +1,7 @@
 #include <iostream>
 #include "GL/glew.h"
 #include "GL/freeglut.h"
-#include "OpenGLApp.h"
+#include "FanApp.h"
 
 
 
@@ -11,13 +11,10 @@ void InitWindow();
 
 
 
-
-
 int main( int argc, char** argv )
 {
 	glutInit( &argc, argv );
-
-	InitWindow();
+	InitWindow();          
 	
 	glewExperimental = TRUE;
 	if (  glewInit() != GLEW_OK )
@@ -32,22 +29,19 @@ int main( int argc, char** argv )
 
 	InitOpenGL();
 
-	
-	glutDisplayFunc( Display );
 	glutReshapeFunc( Reshape );
+	glutDisplayFunc( Display );
+	glutKeyboardFunc( Keyboard );
+	glutSpecialFunc( SpeicalKeyboard );
 	glutMouseFunc( Mouse );
 	glutMotionFunc( MouseMotion );
 	
-
 	glutMainLoop();        
 
 	ClearOpenGLResource();
 
 	return 0;
 }
-
-
-
 
 
 
@@ -76,3 +70,7 @@ void InitWindow()
 
 
 
+
+
+
+\
