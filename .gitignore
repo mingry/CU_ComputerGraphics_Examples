@@ -1,0 +1,9 @@
+*.dll
+GL/*
+glm/*
+ipch/*
+lib/*
+*/Relase/*
+*/Debug/*
+
+*.*~
