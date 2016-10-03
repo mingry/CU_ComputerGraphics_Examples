@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FirstExample", "FirstExampl
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GLM_Example", "GLM_Example\GLM_Example.vcxproj", "{622D1932-66DD-8BDC-9070-6269A863184B}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CubeTransformation", "CubeTransformation\CubeTransformation.vcxproj", "{8CDA6A73-F814-29F8-5F21-0A90CDE9469B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -25,6 +27,10 @@ Global
 		{622D1932-66DD-8BDC-9070-6269A863184B}.Debug|Win32.Build.0 = Debug|Win32
 		{622D1932-66DD-8BDC-9070-6269A863184B}.Release|Win32.ActiveCfg = Release|Win32
 		{622D1932-66DD-8BDC-9070-6269A863184B}.Release|Win32.Build.0 = Release|Win32
+		{8CDA6A73-F814-29F8-5F21-0A90CDE9469B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8CDA6A73-F814-29F8-5F21-0A90CDE9469B}.Debug|Win32.Build.0 = Debug|Win32
+		{8CDA6A73-F814-29F8-5F21-0A90CDE9469B}.Release|Win32.ActiveCfg = Release|Win32
+		{8CDA6A73-F814-29F8-5F21-0A90CDE9469B}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

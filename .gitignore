@@ -6,4 +6,7 @@ lib/*.lib
 */Release/*
 */Debug/*
 
+*.opensdf
+CG_Examples.sdf
+
 *.*~
