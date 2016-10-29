@@ -1,13 +1,17 @@
+
 #include <iostream>
 #include "GL/glew.h"
 #include "GL/freeglut.h"
-#include "FanApp.h"
-
-
+#include "glm/glm.hpp"
+#include "glm/ext.hpp"
+#include "glm/gtx/transform.hpp"
+#include "InitShader.h"
+#include "CarGame0App.h"
 
 
 
 void InitWindow();
+
 
 
 
@@ -29,19 +33,28 @@ int main( int argc, char** argv )
 
 	InitOpenGL();
 
+	
 	glutReshapeFunc( Reshape );
 	glutDisplayFunc( Display );
 	glutKeyboardFunc( Keyboard );
 	glutSpecialFunc( SpeicalKeyboard );
+	glutSpecialUpFunc( SpeicalKeyboardUp );
 	glutMouseFunc( Mouse );
 	glutMotionFunc( MouseMotion );
 	
-	glutMainLoop();        
+	glutMainLoop();
 
 	ClearOpenGLResource();
 
 	return 0;
 }
+
+
+
+
+
+
+
 
 
 
@@ -63,10 +76,6 @@ void InitWindow()
 	// creates a window with an OpenGL context
 	glutCreateWindow( "Computer Graphics" );
 }
-
-
-
-
 
 
 
