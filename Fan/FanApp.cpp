@@ -142,7 +142,6 @@ void Display()
 	// 전체 화면을 지운다.
 	// glClear는 Display 함수 가장 윗 부분에서 한 번만 호출되어야한다.
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 
 	// 카메라 프로젝션 속성을 설정한다.
