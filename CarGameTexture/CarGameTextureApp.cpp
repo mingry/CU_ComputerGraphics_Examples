@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include "GL/glew.h"
 #include "GL/freeglut.h"
@@ -6,10 +7,11 @@
 #include "glm/gtx/transform.hpp"
 #include "InitShader.h"
 #include "Camera.h"
-#include "GroundObj2.h"
+#include "GroundTexture.h"
 #include "BasicShapeObjs.h"
-#include "CarModel0.h"
-#include "TreeModel0.h"
+#include "CarModelTexture.h"
+
+
 
 
 // Camera 
@@ -49,9 +51,6 @@ float g_car_angular_speed = 0;	// 회전 속도 (각속도)
 
 
 
-
-
-
 /**
 InitOpenGL: 프로그램 초기 값 설정을 위해 최초 한 번 호출되는 함수. (main 함수 참고)
 OpenGL에 관련한 초기 값과 프로그램에 필요한 다른 초기 값을 설정한다.
@@ -60,7 +59,7 @@ OpenGL에 관련한 초기 값과 프로그램에 필요한 다른 초기 값을 설정한다.
 void InitOpenGL()
 {
 	// Vertex Shader와 Fragment Shader 코드가 있는 파일을 지정하고 사용할 수 있도록 준비한다.
-	g_shader_id = CreateFromFiles("Shader/vshader3.glsl", "Shader/fshader3.glsl");
+	g_shader_id = CreateFromFiles("Shader/vshader_Texture.glsl", "Shader/fshader_Texture.glsl");
 	glUseProgram(g_shader_id);
 	
 	// 배경색을 정한다.
@@ -80,14 +79,14 @@ void InitOpenGL()
 
 	// Initialize Mesh Models (VAO, VBO)
 	// 필요한 VAO, VBO를 생성한다.
-	InitGround2();
+	InitGroundTexture();
 	InitBasicShapeObjs();
 	InitCarModel();
-	InitTreeModel();
 
 	// 1/60초 후에 Timer 함수가 호출되도록 설정 한다.
 	glutTimerFunc((unsigned int)(1000/FPS), Timer, 0);
 }
+
 
 
 /**
@@ -98,12 +97,10 @@ ClearOpenGLResource: 프로그램이 끝나기 메모리 해제를 위해 한 번 호출되는 함수. (
 void ClearOpenGLResource()
 {
 	// Delete Mesh Models (VA0, VBO)
-	DeleteGround2();
 	DeleteBasicShapeObjs();
 	DeleteCarModel();
-	DeleteTreeModel();
+	DeleteGroundTexture();
 }
-
 
 
 
@@ -131,6 +128,8 @@ void Timer(int value)
 	glutPostRedisplay();
 	glutTimerFunc((unsigned int)(1000.f/FPS), Timer, 0);
 }
+
+
 
 
 
@@ -167,35 +166,22 @@ void Display()
 	{
 		glm::mat4 modelview_T = view_m;
 		glUniformMatrix4fv(m_mat_loc, 1, GL_FALSE,  glm::value_ptr(modelview_T));
-		DrawGround2();
+		DrawGroundTexture();
 	}
 
 
 	// Moving Car
 	{
-		glm::mat4 modelview_T = view_m * car_m;
+		glm::mat4 modelview_T = view_m * car_m  * glm::scale(glm::vec3(0.5, 0.5, 0.5));
 		glUniformMatrix4fv(m_mat_loc, 1, GL_FALSE,  glm::value_ptr(modelview_T));
 		DrawCarModel();
 	}
 
 
-	// Trees
-	for ( int i=0; i<=5; i++ )
-	for ( int j=0; j<=5; j++ )
-	{
-		glm::mat4 modelview_T;
-		modelview_T = view_m * glm::translate(glm::vec3(i*200-500, 0, j*200-500));
-		glUniformMatrix4fv(m_mat_loc, 1, GL_FALSE,  glm::value_ptr(modelview_T));
-
-		DrawTreeModel();
-	}
+	
 
 	glutSwapBuffers();
 }
-
-
-
-
 
 
 

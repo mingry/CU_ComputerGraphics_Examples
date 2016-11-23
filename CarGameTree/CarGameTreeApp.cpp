@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include "GL/glew.h"
 #include "GL/freeglut.h"
@@ -8,8 +9,10 @@
 #include "Camera.h"
 #include "GroundObj2.h"
 #include "BasicShapeObjs.h"
-#include "CarModel0.h"
-#include "TreeModel0.h"
+#include "CarModel.h"
+#include "TreeModel.h"
+
+
 
 
 // Camera 
@@ -23,7 +26,6 @@ static int g_last_mouse_x;
 static int g_last_mouse_y;
 static int g_window_w;
 static int g_window_h;
-
 
 
 // Shader Program ID
@@ -90,6 +92,7 @@ void InitOpenGL()
 }
 
 
+
 /**
 ClearOpenGLResource: 프로그램이 끝나기 메모리 해제를 위해 한 번 호출되는 함수. (main 함수 참고)
 프로그램에서 사용한 메모리를 여기에서 해제할 수 있다. 
@@ -103,7 +106,6 @@ void ClearOpenGLResource()
 	DeleteCarModel();
 	DeleteTreeModel();
 }
-
 
 
 
@@ -131,6 +133,8 @@ void Timer(int value)
 	glutPostRedisplay();
 	glutTimerFunc((unsigned int)(1000.f/FPS), Timer, 0);
 }
+
+
 
 
 
@@ -187,13 +191,11 @@ void Display()
 		modelview_T = view_m * glm::translate(glm::vec3(i*200-500, 0, j*200-500));
 		glUniformMatrix4fv(m_mat_loc, 1, GL_FALSE,  glm::value_ptr(modelview_T));
 
-		DrawTreeModel();
+		DrawTreeModel((i+j)%NUM_TREES);
 	}
 
 	glutSwapBuffers();
 }
-
-
 
 
 
