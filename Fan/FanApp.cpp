@@ -369,12 +369,12 @@ void Mouse(int button, int state, int x, int y)
 		g_right_button_pushed = false;
 	else if ( button == 3 )
 	{
-		g_camera.inputMouse(Camera::IN_ZOOM, 0, 1);
+		g_camera.inputMouse(Camera::IN_TRANS_Z, 0, -1);
 		glutPostRedisplay();
 	}
 	else if ( button == 4 )
 	{
-		g_camera.inputMouse(Camera::IN_ZOOM, 0, -1);
+		g_camera.inputMouse(Camera::IN_TRANS_Z, 0, 1);
 		glutPostRedisplay();
 	}
 
@@ -397,12 +397,7 @@ void MouseMotion(int x, int y)
 	double last_mouse_xd = (double)g_last_mouse_x / g_window_w;
 	double last_mouse_yd = 1 - (double)g_last_mouse_y / g_window_h;
 
-	if ( g_left_button_pushed && g_right_button_pushed )
-	{
-		g_camera.inputMouse(Camera::IN_ZOOM, last_mouse_xd, last_mouse_yd, mouse_xd, mouse_yd);
-		glutPostRedisplay();
-	}
-	else if ( g_left_button_pushed )
+	if ( g_left_button_pushed )
 	{
 		g_camera.inputMouse(Camera::IN_ROTATION_Y_UP, last_mouse_xd, last_mouse_yd, mouse_xd, mouse_yd);
 		glutPostRedisplay();
