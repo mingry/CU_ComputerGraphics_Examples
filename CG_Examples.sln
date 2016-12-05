@@ -23,6 +23,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CarGameTree", "CarGameTree\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CarGameTexture", "CarGameTexture\CarGameTexture.vcxproj", "{11FCD88C-4829-0C73-7C2D-AEB3F5CCFDE2}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CarGameToon", "CarGameToon\CarGameToon.vcxproj", "{AB9031BD-D5F4-6EC8-EF61-086E552B005E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -73,6 +75,10 @@ Global
 		{11FCD88C-4829-0C73-7C2D-AEB3F5CCFDE2}.Debug|Win32.Build.0 = Debug|Win32
 		{11FCD88C-4829-0C73-7C2D-AEB3F5CCFDE2}.Release|Win32.ActiveCfg = Release|Win32
 		{11FCD88C-4829-0C73-7C2D-AEB3F5CCFDE2}.Release|Win32.Build.0 = Release|Win32
+		{AB9031BD-D5F4-6EC8-EF61-086E552B005E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{AB9031BD-D5F4-6EC8-EF61-086E552B005E}.Debug|Win32.Build.0 = Debug|Win32
+		{AB9031BD-D5F4-6EC8-EF61-086E552B005E}.Release|Win32.ActiveCfg = Release|Win32
+		{AB9031BD-D5F4-6EC8-EF61-086E552B005E}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
